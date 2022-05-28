@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies</title>
+</head>
+<style>
+    #movieinp{
+        width: 200px;
+        height:30px
+    }#movie_box{
+        width: 204px;
+        height: 500px;
+        border: 1px solid black;
+        overflow: scroll;
+    }#details{
+        margin-left: 10px;
+    }
+</style>
+<script>
+    let id;
+    async function Searchmovies(){
+    try{   
+    movie=document.getElementById("movieinp").value; 
+    url ='http://www.omdbapi.com/?apikey=fa596efb&s='+movie;
+    const res=await fetch(url);
+    const data=await res.json();
+    let mov=data.Search;
+
+    if (mov!=undefined){
+        console.log(mov)
+        return mov;
+    }
+    
+    }catch(err){
+        console.log(err)
+    }
+    }
+    
+   function appendmovies(data){
+       document.getElementById("movie_box").innerText=null;
+       data.forEach(element => {
+           let t=document.createElement("p");
+           t.innerText=element.Title;
+           function detail(){
+
+           }
+           t.addEventListener("click",function(){
+               document.getElementById("details").innerHTML=null;
+               image=document.createElement("img");
+               image.src=element.Poster;
+               titles=document.createElement('p');
+               titles.innerText=element.Title;
+               year=document.createElement('p');
+               year.innerText=element.Year;
+               imdbID=document.createElement("p");
+               imdbID.innerText=element.imdbID;
+               document.getElementById("details").append(image,titles,year,imdbID)
+               
+           })
+           document.getElementById("movie_box").append(t);
+
+       });
+
+   }
+   async function main(){
+       let datas=await Searchmovies();
+       if(datas!=undefined){
+           appendmovies(datas)
+       }
+   }
+   function debounce(func,delay){
+       if(id){
+           clearTimeout(id)
+       }
+       id=setTimeout(function(){
+           func();
+       },delay)
+   }
+</script>
+<body>
+    <div >
+        <input type="text" id="movieinp" oninput="debounce(main,2000)">
+        <div style="display: flex;">
+            <div id="movie_box">
+        </div>
+        <div id="details">
+
+        </div>
+    </div>
+        
+        
+    </div>
+</body>
+</html>
